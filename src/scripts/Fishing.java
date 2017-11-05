@@ -4,6 +4,7 @@
 
 package scripts;
 
+import org.tribot.api.DynamicClicking;
 import org.tribot.api.General;
 import org.tribot.api2007.*;
 import org.tribot.api2007.types.*;
@@ -50,7 +51,7 @@ public class Fishing extends Script {
         General.useAntiBanCompliance(true);
 
         final RSArea treeRadius = RSAreaUtil.getAreaBoundary(lumbridge_tree, radius);
-        final RSArea fishing = RSAreaUtil.getAreaBoundary(FISHING_SPOT, 1);
+        final RSArea fishing = RSAreaUtil.getAreaBoundary(FISHING_SPOT, 10);
 
         // handle login
         Logging.debug("Logging in.");
@@ -68,7 +69,7 @@ public class Fishing extends Script {
             if(!checkInvLogs()){
 
                 Logging.debug("Walking to Lumbridge Tree.");
-                Walking.walkTo(lumbridge_tree);
+                Walking.blindWalkTo(lumbridge_tree);
 
                 try{
                     RSObject[] nearTrees = Objects.findNearest(radius, new Filter<RSObject>() {
@@ -84,6 +85,7 @@ public class Fishing extends Script {
                         RSObject nearestTree = nearTrees[0];
                         Logging.debug("Found tree, attempting to chop.");
                         nearestTree.click();
+                        General.sleep(1500);
                     }}
                     catch (Exception e){
                     Logging.debug(e.toString());
@@ -92,8 +94,12 @@ public class Fishing extends Script {
             }
             else if(!Inventory.isFull() && checkInvLogs()){
                 Logging.debug("Walking to fishing spot.");
-                //WebWalking.walkTo(FISHING_SPOT);
-                WebWalking.walkTo(FISHING_SPOT);
+
+                if (!fishing.contains(Player.getPosition())) {
+                    Walking.blindWalkTo(FISHING_SPOT);
+                    General.sleep(1000);
+                }
+
                 RSNPC[] nearFishingSpots = NPCs.findNearest(new Filter<RSNPC>(){
                     @Override
                     public boolean accept(RSNPC npc) {
@@ -106,7 +112,7 @@ public class Fishing extends Script {
                     General.sleep(300);
                 } else {
                     RSNPC nearestFishing = nearFishingSpots[0];
-                    nearestFishing.click();
+                    nearestFishing.getModel().click("Net");
                 }
             }
             else if(checkInvRawFish() && Inventory.isFull()){
