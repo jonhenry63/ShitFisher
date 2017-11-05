@@ -62,16 +62,13 @@ public class Fishing extends Script {
             Logging.debug("Sleeping.");
             General.sleep(300);
 
-            if(isChopping() || isCooking() || isFishing() || Player.isMoving()){
-                Logging.debug("Player active.");
-                continue;
-            }
+            if (Player.getAnimation() != -1  || Player.isMoving()) continue;
 
             Logging.debug("Checking inventory for logs.");
             if(!checkInvLogs()){
 
                 Logging.debug("Walking to Lumbridge Tree.");
-                WebWalking.walkTo(lumbridge_tree);
+                Walking.walkTo(lumbridge_tree);
 
                 try{
                     RSObject[] nearTrees = Objects.findNearest(radius, new Filter<RSObject>() {
@@ -173,20 +170,5 @@ public class Fishing extends Script {
             return false;
         }else return true;
     }
-
-    private boolean isChopping() {
-        return Player.getAnimation() == CHOPPING_ANIMATION_ID;
-    }
-
-    private boolean isFishing() {
-        return Player.getAnimation() == FISHING_ANIMATION_ID;
-    }
-
-    private boolean isCooking() {
-        return Player.getAnimation() == CHOPPING_ANIMATION_ID;
-    }
-
-
-
 
 }
