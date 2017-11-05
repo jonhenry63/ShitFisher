@@ -31,9 +31,6 @@ public class Fishing extends Script {
     private final int SMALL_FISHING_NET = 303;
     private final int TINDERBOX = 590;
 
-    private final int CHOPPING_ANIMATION_ID = 879;
-    private final int FISHING_ANIMATION_ID = 621;
-
     private boolean debug = true;
 
     private final int radius = 10;
@@ -69,6 +66,7 @@ public class Fishing extends Script {
             if(!checkInvLogs()){
 
                 Logging.debug("Walking to Lumbridge Tree.");
+
                 Walking.blindWalkTo(lumbridge_tree);
 
                 try{
@@ -112,6 +110,7 @@ public class Fishing extends Script {
                     General.sleep(300);
                 } else {
                     RSNPC nearestFishing = nearFishingSpots[0];
+
                     nearestFishing.getModel().click("Net");
                 }
             }
@@ -124,6 +123,7 @@ public class Fishing extends Script {
 
                 RSItem[] uncookedFish = Inventory.find(UNCOOKED_SHRIMP);
                 uncookedFish[0].click();
+                General.sleep(300,1000);
 
                 final RSArea fireArea = RSAreaUtil.getAreaBoundary(COOKING_SPOT, 7);
                 RSObject[] nearFires = Objects.findNearest(7, new Filter<RSObject>() {
@@ -139,7 +139,9 @@ public class Fishing extends Script {
                     RSObject nearestFire = nearFires[0];
                     Logging.debug("Found tree, attempting to chop.");
                     nearestFire.click();
+                    General.sleep(300,1000);
                     uncookedFish[0].click("Make all");
+                    General.sleep(300,1000);
                 }
             } else if(!checkInvRawFish() && Inventory.isFull()){
                 droppingHandler();
