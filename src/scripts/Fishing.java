@@ -74,7 +74,7 @@ public class Fishing extends Script {
             if(!checkInvLogs()){
 
                 Logging.debug("Walking to Lumbridge Tree.");
-                Walking.blindWalkTo(lumbridge_tree);
+                WebWalking.walkTo(lumbridge_tree);
 
                 try{
                     RSObject[] nearTrees = Objects.findNearest(radius, new Filter<RSObject>() {
@@ -98,8 +98,8 @@ public class Fishing extends Script {
             }
             else if(!Inventory.isFull() && checkInvLogs()){
                 Logging.debug("Walking to fishing spot.");
-                Walking.blindWalkTo(FISHING_SPOT);
-                Walking.walkTo(FISHING_SPOT);
+                //WebWalking.walkTo(FISHING_SPOT);
+                WebWalking.walkTo(FISHING_SPOT);
                 RSNPC[] nearFishingSpots = NPCs.findNearest(new Filter<RSNPC>(){
                     @Override
                     public boolean accept(RSNPC npc) {
