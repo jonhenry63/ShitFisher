@@ -14,6 +14,8 @@ import org.tribot.api2007.types.RSObject;
 import org.tribot.api2007.types.RSTile;
 import org.tribot.script.ScriptManifest;
 import scripts.Debug.Logging;
+import scripts.utils.ItemUtil;
+import scripts.utils.RSAreaUtil;
 
 
 import java.util.Random;
@@ -50,10 +52,8 @@ public class Fishing extends Script {
         Logging.debug("Loading ban compliance.");
         General.useAntiBanCompliance(true);
 
-        Random rand = null;
-
-        final RSArea treeRadius = getAreaBoundary(lumbridge_tree, radius);
-        final RSArea fishing = getAreaBoundary(FISHING_SPOT, 1);
+        final RSArea treeRadius = RSAreaUtil.getAreaBoundary(lumbridge_tree, radius);
+        final RSArea fishing = RSAreaUtil.getAreaBoundary(FISHING_SPOT, 1);
 
         // handle login
         Logging.debug("Logging in.");
@@ -116,16 +116,16 @@ public class Fishing extends Script {
                 }
             }
             else if(checkInvRawFish() && Inventory.isFull()){
-                COOKING_SPOT = new RSTile(3224 + (rand.nextInt((6) + 1) - 3),3173 + (rand.nextInt((6) + 1) - 3));
+                COOKING_SPOT = new RSTile(3224 + General.random(-3,3),3173 + General.random(-3, 3));
 
 
-                useItemOnItem("Logs", "Tinderbox");
+                ItemUtil.useItemOnItem("Logs", "Tinderbox");
 
 
                 RSItem[] uncookedFish = Inventory.find(UNCOOKED_SHRIMP);
                 uncookedFish[0].click();
 
-                final RSArea fireArea = getAreaBoundary(COOKING_SPOT, 7);
+                final RSArea fireArea = RSAreaUtil.getAreaBoundary(COOKING_SPOT, 7);
                 RSObject[] nearFires = Objects.findNearest(7, new Filter<RSObject>() {
                     @Override
                     public boolean accept(RSObject obj) {
@@ -189,36 +189,7 @@ public class Fishing extends Script {
         return Player.getAnimation() == CHOPPING_ANIMATION_ID;
     }
 
-    private RSArea getAreaBoundary(RSTile centerTile, int radius) {
-        RSTile[] borderTiles = new RSTile[]{
-                new RSTile(centerTile.getX() + radius, centerTile.getY() + radius),
-                new RSTile(centerTile.getX() + radius, centerTile.getY() - radius),
-                new RSTile(centerTile.getX() - radius, centerTile.getY() + radius),
-                new RSTile(centerTile.getX() - radius, centerTile.getY() - radius)
-        };
-        return new RSArea(borderTiles);
-    }
 
-    private void useItemOnItem(String item1Name, String item2Name) {
-        RSItem[] item1Arr = Inventory.find(item1Name);
-        RSItem[] item2Arr = Inventory.find(item2Name);
 
-        if (item1Arr.length < 1 || item2Arr.length < 1) throw new RuntimeException("Items not found");
 
-        RSItem item1 = item1Arr[0];
-        RSItem item2 = item2Arr[0];
-
-        if (Game.getItemSelectionState() == 1 && Game.getSelectedItemName().equals(item1Name)) {
-            item2.click();
-            return;
-        }
-
-        while (Game.getItemSelectionState() == 0) {
-            item1.click();
-            General.sleep(500,600);
-        }
-
-        item2.click();
-        General.sleep(500,600);
-    }
 }
