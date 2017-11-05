@@ -13,12 +13,9 @@ import org.tribot.api2007.types.RSArea;
 import org.tribot.api2007.types.RSObject;
 import org.tribot.api2007.types.RSTile;
 import org.tribot.script.ScriptManifest;
-import scripts.Debug.Logging;
+import scripts.debug.Logging;
 import scripts.utils.ItemUtil;
 import scripts.utils.RSAreaUtil;
-
-
-import java.util.Random;
 
 @ScriptManifest(authors = "cinnes", name = "Fish and Cook", category = "Fishing", version = 1.0, description = "This simple script fishes shrimps, cooks them and drops.")
 public class Fishing extends Script {

@@ -1,4 +1,4 @@
-package scripts.Debug;
+package scripts.debug;
 
 /**
  * Created by Jon on 05/11/2017.
