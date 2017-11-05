@@ -52,8 +52,6 @@ public class Fishing extends Script {
         Logging.debug("Loading ban compliance.");
         General.useAntiBanCompliance(true);
 
-        Random rand = null;
-
         final RSArea treeRadius = RSAreaUtil.getAreaBoundary(lumbridge_tree, radius);
         final RSArea fishing = RSAreaUtil.getAreaBoundary(FISHING_SPOT, 1);
 
@@ -118,7 +116,7 @@ public class Fishing extends Script {
                 }
             }
             else if(checkInvRawFish() && Inventory.isFull()){
-                COOKING_SPOT = new RSTile(3224 + (rand.nextInt((6) + 1) - 3),3173 + (rand.nextInt((6) + 1) - 3));
+                COOKING_SPOT = new RSTile(3224 + General.random(-3,3),3173 + General.random(-3, 3));
 
 
                 ItemUtil.useItemOnItem("Logs", "Tinderbox");
