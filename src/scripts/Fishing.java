@@ -24,13 +24,6 @@ public class Fishing extends Script {
     private final int FISHING_SPOT_ID = 1530;
     private final int FIRE_ID = 26185;
 
-    private final int LOGS_ID = 1511;
-    private final int UNCOOKED_SHRIMP = 317;
-    private final int UNCOOKED_ANCHOVIES = 321;
-
-    private final int SMALL_FISHING_NET = 303;
-    private final int TINDERBOX = 590;
-
     private boolean debug = true;
 
     private final int radius = 10;
@@ -124,7 +117,7 @@ public class Fishing extends Script {
                 ItemUtil.useItemOnItem("Logs", "Tinderbox");
 
 
-                RSItem[] uncookedFish = Inventory.find(UNCOOKED_SHRIMP);
+                RSItem[] uncookedFish = Inventory.find("Uncooked Shrimp");
                 uncookedFish[0].click();
                 General.sleep(300,1000);
 
