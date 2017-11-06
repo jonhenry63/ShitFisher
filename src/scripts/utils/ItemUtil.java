@@ -30,7 +30,7 @@ public class ItemUtil {
     }
 
     public static boolean carryingItem(String name) {
-        return Inventory.getCount(name) == 0;
+        return Inventory.getCount(name) != 0;
     }
 
 }
