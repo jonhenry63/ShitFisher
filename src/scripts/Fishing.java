@@ -113,9 +113,7 @@ public class Fishing extends Script {
             else if(Inventory.isFull()){
                 COOKING_SPOT = new RSTile(3224 + General.random(-3,3),3173 + General.random(-3, 3));
 
-
                 ItemUtil.useItemOnItem("Logs", "Tinderbox");
-
 
                 RSItem[] uncookedFish = Inventory.find("Uncooked Shrimp");
                 uncookedFish[0].click();
