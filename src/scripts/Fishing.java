@@ -19,7 +19,7 @@ import scripts.debug.Logging;
 import scripts.utils.ItemUtil;
 import scripts.utils.RSAreaUtil;
 
-@ScriptManifest(authors = "cinnes", name = "Fish and Cook", category = "Fishing", version = 1.0, description = "This simple script fishes shrimps, cooks them and drops. Should start a fire and continue to cook on it.")
+@ScriptManifest(authors = "cinnes", name = "Fish and Cook", category = "Fishing", version = 1.0, description = "Make all implemented. Testing cooking.")
 public class Fishing extends Script {
     private final int DEAD_TREE_ID = 1365;
     private final int FISHING_SPOT_ID = 1530;
@@ -63,13 +63,6 @@ public class Fishing extends Script {
                     return fireArea.contains(obj) && obj.getID() == FIRE_ID;
                 }
             });
-            Logging.debug(COOKING_SPOT.toString());
-            Logging.debug("There are " + nearFires.length + " fires close by.");
-            Logging.debug("Is inventory full? " + Inventory.isFull());
-            Logging.debug("Carrying uncooked fish? " + (ItemUtil.carryingItem("Raw Shrimp") || ItemUtil.carryingItem("Raw Anchovie")));
-            Logging.debug("Is there a fire close by? " + (nearFires.length > 0));
-            Logging.debug("Complete Test: " + (Inventory.isFull() && (ItemUtil.carryingItem("Raw Shrimp") || ItemUtil.carryingItem("Raw Anchovie")) && nearFires.length < 1) + "");
-            Logging.debug("Sleeping.");
             General.sleep(300);
 
             if (Player.getAnimation() != -1  || Player.isMoving()) {
@@ -128,21 +121,19 @@ public class Fishing extends Script {
                     nearestFishing.getModel().click("Net");
                 }
             } else if((ItemUtil.carryingItem("Raw shrimps") || ItemUtil.carryingItem("Raw anchovies")) && nearFires.length > 0){
-                RSItem[] uncookedFish = Inventory.find("Raw shrimps");
-                uncookedFish[0].click();
-                General.sleep(500,1000);
-
+                Logging.debug("Cooking fish.");
                 if(nearFires.length < 1){
                     continue;
                 } else {
                     RSObject nearestFire = nearFires[0];
-                    Logging.debug("Found tree, attempting to chop.");
-                    nearestFire.click();
-                    General.sleep(500, 1000);
-                    uncookedFish[0].click("Make all");
-                    General.sleep(500, 1000);
+                    if(ItemUtil.carryingItem("Raw Shrimps")) {
+                        Cooking.cookAll("Raw shrimps", nearestFire);
+                    } else if (ItemUtil.carryingItem("Raw anchovies")) {
+                        Cooking.cookAll("Raw anchovies", nearestFire);
+                    }
                 }
             } else if(Inventory.isFull() && (ItemUtil.carryingItem("Raw shrimps") || ItemUtil.carryingItem("Raw anchovies")) && nearFires.length < 1) {
+                Logging.debug("Starting fire.");
                 COOKING_SPOT = new RSTile(3241 + General.random(-3,3),3151 + General.random(-3, 3));
                 Walking.blindWalkTo(COOKING_SPOT);
                 ItemUtil.useItemOnItem("Logs", "Tinderbox");
