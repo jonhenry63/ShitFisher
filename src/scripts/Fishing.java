@@ -85,8 +85,7 @@ public class Fishing extends Script {
                     Logging.debug(e.toString());
                 }
 
-            }
-            else if(!Inventory.isFull() && !ItemUtil.carryingItem("Logs")){
+            } else if(!Inventory.isFull() && ItemUtil.carryingItem("Logs")){
                 Logging.debug("Walking to fishing spot.");
 
                 if (!fishing.contains(Player.getPosition())) {
@@ -109,8 +108,7 @@ public class Fishing extends Script {
 
                     nearestFishing.getModel().click("Net");
                 }
-            }
-            else if(Inventory.isFull()){
+            } else if(Inventory.isFull()){
                 COOKING_SPOT = new RSTile(3224 + General.random(-3,3),3173 + General.random(-3, 3));
 
                 ItemUtil.useItemOnItem("Logs", "Tinderbox");
