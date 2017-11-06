@@ -54,7 +54,10 @@ public class Fishing extends Script {
         Logging.debug("Logging in.");
         Login.login();
 
-        checkInvSetup();
+        if (!ItemUtil.carryingItem("Small fishing net") || !ItemUtil.carryingItem("Tinderbox")) {
+            throw new RuntimeException("Missing required items.");
+        }
+
         while(running){
 
             Logging.debug("Sleeping.");
@@ -63,7 +66,7 @@ public class Fishing extends Script {
             if (Player.getAnimation() != -1  || Player.isMoving()) continue;
 
             Logging.debug("Checking inventory for logs.");
-            if(!checkInvLogs()){
+            if(!ItemUtil.carryingItem("Logs")) {
 
                 Logging.debug("Walking to Lumbridge Tree.");
 
@@ -90,7 +93,7 @@ public class Fishing extends Script {
                 }
 
             }
-            else if(!Inventory.isFull() && checkInvLogs()){
+            else if(!Inventory.isFull() && !ItemUtil.carryingItem("Logs")){
                 Logging.debug("Walking to fishing spot.");
 
                 if (!fishing.contains(Player.getPosition())) {
@@ -114,7 +117,7 @@ public class Fishing extends Script {
                     nearestFishing.getModel().click("Net");
                 }
             }
-            else if(checkInvRawFish() && Inventory.isFull()){
+            else if(Inventory.isFull()){
                 COOKING_SPOT = new RSTile(3224 + General.random(-3,3),3173 + General.random(-3, 3));
 
 
@@ -143,40 +146,8 @@ public class Fishing extends Script {
                     uncookedFish[0].click("Make all");
                     General.sleep(300,1000);
                 }
-            } else if(!checkInvRawFish() && Inventory.isFull()){
-                droppingHandler();
             }
-
-
         }
-    }
-
-    private void droppingHandler() {
-        Logging.debug("Checking if everything needs to be dropped.");
-        if (Inventory.isFull() && Inventory.getCount(UNCOOKED_SHRIMP) == 0) {
-            Logging.debug("Dropping inventory.");
-            Inventory.dropAllExcept(SMALL_FISHING_NET,TINDERBOX);
-        }
-    }
-
-    private void checkInvSetup() {
-        if(Inventory.getCount(SMALL_FISHING_NET,TINDERBOX) == 0){
-            Logging.debug("No small fishing net/tinderbox.");
-        }
-    }
-
-    private boolean checkInvLogs(){
-        if(Inventory.getCount(LOGS_ID) == 0){
-            Logging.debug("No logs.");
-            return false;
-        }else return true;
-    }
-
-    private boolean checkInvRawFish(){
-        if(Inventory.getCount(UNCOOKED_SHRIMP) == 0 && Inventory.getCount(UNCOOKED_ANCHOVIES) == 0){
-            Logging.debug("No fish.");
-            return false;
-        }else return true;
     }
 
 }

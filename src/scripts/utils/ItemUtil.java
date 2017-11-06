@@ -28,4 +28,9 @@ public class ItemUtil {
         item2.click();
         General.sleep(500,600);
     }
+
+    public static boolean carryingItem(String name) {
+        return Inventory.getCount(name) == 0;
+    }
+
 }
