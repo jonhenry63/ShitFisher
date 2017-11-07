@@ -5,16 +5,28 @@
 package scripts;
 
 import org.tribot.api.General;
+import org.tribot.api.types.generic.Filter;
 import org.tribot.api2007.*;
 import org.tribot.api2007.types.*;
 import org.tribot.script.Script;
 import org.tribot.script.ScriptManifest;
 import scripts.debug.Logging;
 import scripts.utils.ItemUtil;
+import scripts.utils.RSAreaUtil;
 
 
-@ScriptManifest(authors = "cinnes", name = "Cooking Test", category = "Cooking", version = 1.0, description = "Should click make all.")
+@ScriptManifest(authors = "cinnes", name = "Cooking Test", category = "Cooking", version = 1.0, description = "Running cooks raw shrimps and raw anchovies on lumbridge range.")
 public class Cooking extends Script {
+    private final int RANGE_ID = 114;
+
+    private boolean debug = true;
+
+    private final int radius = 10;
+
+    private boolean running = true;
+
+    private RSTile LUMBRIDGE_RANGE = new RSTile(3211,3215);
+
     @Override
     public void run() {
         Logging.debug("Starting...");
@@ -22,13 +34,18 @@ public class Cooking extends Script {
         Logging.debug("Loading ban compliance.");
         General.useAntiBanCompliance(true);
 
-
+        final RSArea treeRadius = RSAreaUtil.getAreaBoundary(LUMBRIDGE_RANGE, radius);
 
         // handle login
         Logging.debug("Logging in.");
         Login.login();
 
-
+        RSObject[] nearRanges = Objects.findNearest(radius, new Filter<RSObject>() {
+            @Override
+            public boolean accept(RSObject obj) {
+                return treeRadius.contains(obj) && obj.getID() == RANGE_ID;
+            }
+        });
 
         while(true){
 
@@ -38,10 +55,13 @@ public class Cooking extends Script {
                 //ABCUtil.performExamineObject();
                 continue;
             }
+            RSObject nearestRange = nearRanges[0];
+            if(ItemUtil.carryingItem("Raw Shrimps")) {
+                Cooking.cookAll("Raw shrimps", nearestRange);
+            } else if (ItemUtil.carryingItem("Raw anchovies")) {
+                Cooking.cookAll("Raw anchovies", nearestRange);
+            }
 
-            RSInterfaceChild makeAll;
-            makeAll = Interfaces.get(270,14);
-            makeAll.click();
         }
     }
 
@@ -58,6 +78,7 @@ public class Cooking extends Script {
         Logging.debug("Cooking all.");
         int cookCount = 0;
         while(ItemUtil.carryingItem(item)) {
+
             if (cookCount == 0) {
                 RSItem[] uncookedFish = Inventory.find(item);
                 uncookedFish[0].click();
@@ -70,18 +91,16 @@ public class Cooking extends Script {
 
             if (cookCount < 2) {
                 General.sleep(900);
+                cookCount++;
                 if(Player.getAnimation() == -1) {
                     cookCount = 0;
-                } else {
-                    cookCount++;
                 }
                 General.sleep(900);
-            } else if (cookCount > 2) {
+            } else if (cookCount >= 2) {
                 General.sleep(1200);
+                cookCount++;
                 if(Player.getAnimation() == -1) {
                     cookCount = 0;
-                } else {
-                    cookCount++;
                 }
                 General.sleep(1200);
             }
