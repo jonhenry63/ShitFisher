@@ -29,10 +29,13 @@ public class Fishing extends Script {
 
     private final int radius = 10;
 
+    private int spot = 1;
     private boolean running = true;
 
     private RSTile lumbridge_tree = new RSTile(3224,3173);
-    private RSTile FISHING_SPOT = new RSTile(3242,3151);
+    private RSTile FISHING_SPOT1 = new RSTile(3242,3151);
+    private RSTile FISHING_SPOT2 = new RSTile(3239,3147);
+
     private RSTile COOKING_SPOT;
     @Override
     public void run() {
@@ -42,7 +45,7 @@ public class Fishing extends Script {
         General.useAntiBanCompliance(true);
 
         final RSArea treeRadius = RSAreaUtil.getAreaBoundary(lumbridge_tree, radius);
-        final RSArea fishing = RSAreaUtil.getAreaBoundary(FISHING_SPOT, 10);
+        final RSArea fishing = RSAreaUtil.getAreaBoundary(FISHING_SPOT1, 10);
 
         // handle login
         Logging.debug("Logging in.");
@@ -63,8 +66,20 @@ public class Fishing extends Script {
                     return fireArea.contains(obj) && obj.getID() == FIRE_ID;
                 }
             });
+            RSNPC[] nearFishingSpots = NPCs.findNearest(new Filter<RSNPC>(){
+                @Override
+                public boolean accept(RSNPC npc) {
+                    return fishing.contains(npc) && npc.getID() == FISHING_SPOT_ID;
+                }
+            });
+            RSObject[] nearTrees = Objects.findNearest(radius, new Filter<RSObject>() {
+                @Override
+                public boolean accept(RSObject obj) {
+                    return treeRadius.contains(obj) && obj.getID() == DEAD_TREE_ID;
+                }
+            });
             General.sleep(300);
-
+            Logging.debug("Amount of close fires: " + nearFires.length);
             if (Player.getAnimation() != -1  || Player.isMoving()) {
                 //ABCUtil.performExamineObject();
                 continue;
@@ -78,12 +93,7 @@ public class Fishing extends Script {
                 Walking.blindWalkTo(lumbridge_tree);
 
                 try{
-                    RSObject[] nearTrees = Objects.findNearest(radius, new Filter<RSObject>() {
-                        @Override
-                        public boolean accept(RSObject obj) {
-                            return treeRadius.contains(obj) && obj.getID() == DEAD_TREE_ID;
-                        }
-                    });
+
                     if (nearTrees.length < 1){
                         Logging.debug("No trees found, waiting til respawn.");
                         General.sleep(500);
@@ -99,18 +109,25 @@ public class Fishing extends Script {
 
             } else if(!Inventory.isFull() && ItemUtil.carryingItem("Logs")){
                 Logging.debug("Walking to fishing spot.");
+                Logging.debug("Searching for new fishing spots.");
 
+                Logging.debug("There are " + nearFishingSpots.length + " close by.");
                 if (!fishing.contains(Player.getPosition())) {
-                    Walking.blindWalkTo(FISHING_SPOT);
+                    if (spot == 1){
+                        Walking.blindWalkTo(FISHING_SPOT1);
+                        if(nearFires.length == 0){
+                            spot = 2;
+                        }
+                    }
+                    else if(spot == 2){
+                        Walking.blindWalkTo(FISHING_SPOT2);
+                        if(nearFires.length == 0){
+                            spot = 1;
+                        }
+                    }
                     General.sleep(1000);
                 }
 
-                RSNPC[] nearFishingSpots = NPCs.findNearest(new Filter<RSNPC>(){
-                    @Override
-                    public boolean accept(RSNPC npc) {
-                        return fishing.contains(npc) && npc.getID() == FISHING_SPOT_ID;
-                    }
-                });
 
                 if (nearFishingSpots.length < 1){
                     Logging.debug("No fishing spots found, waiting til respawn.");
@@ -126,17 +143,18 @@ public class Fishing extends Script {
                     continue;
                 } else {
                     RSObject nearestFire = nearFires[0];
-                    if(ItemUtil.carryingItem("Raw Shrimps")) {
-                        Cooking.cookAll("Raw shrimps", nearestFire);
-                    } else if (ItemUtil.carryingItem("Raw anchovies")) {
-                        Cooking.cookAll("Raw anchovies", nearestFire);
-                    }
+                    Cooking.cookAll("Raw shrimps", nearestFire);
+                    Cooking.cookAll("Raw anchovies", nearestFire);
                 }
             } else if(Inventory.isFull() && (ItemUtil.carryingItem("Raw shrimps") || ItemUtil.carryingItem("Raw anchovies")) && nearFires.length < 1) {
                 Logging.debug("Starting fire.");
                 COOKING_SPOT = new RSTile(3241 + General.random(-3,3),3151 + General.random(-3, 3));
                 Walking.blindWalkTo(COOKING_SPOT);
                 ItemUtil.useItemOnItem("Logs", "Tinderbox");
+            } else if((ItemUtil.carryingItem("Shrimps") || ItemUtil.carryingItem("Anchovies")) &&  !(ItemUtil.carryingItem("Raw shrimps") || ItemUtil.carryingItem("Raw anchovies"))) {
+                Logging.debug("Dropping cooked fish.");
+                Inventory.dropAllExcept(new String[] {"Small fishing net", "Tinderbox", "Logs"});
+
             }
         }
     }
